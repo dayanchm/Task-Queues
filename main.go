@@ -16,15 +16,15 @@ const (
 
 func sendEmail(email string) error {
 	m := gomail.NewMessage()
-	m.SetHeader("From", "muhammetegeldiyevdayanc@gmail.com") // Gönderen e-posta adresi
+	m.SetHeader("From", "example@gmail.com")
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Test E-posta")
 	m.SetBody("text/html", "Merhaba, bu bir test e-postasıdır.")
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, "muhammetegeldiyevdayanc@gmail.com", "Genetik19970825.*/")
+	d := gomail.NewDialer("smtp.gmail.com", 587, "example@gmail.com", "Password")
 
 	if err := d.DialAndSend(m); err != nil {
-		fmt.Println("E-posta gönderiminde hata:", err)
+		fmt.Println("Error:", err)
 		return err
 	}
 
@@ -42,7 +42,7 @@ func processTask(ctx context.Context, client *redis.Client) {
 
 		email := result[1]
 		if err := sendEmail(email); err != nil {
-			fmt.Println("E-posta gönderiminde hata:", err)
+			fmt.Println("Error:", err)
 		}
 	}
 }
@@ -59,7 +59,7 @@ func main() {
 	go processTask(ctx, client)
 
 	for i := 1; i <= 5; i++ {
-		email := "recipient.email@example.com" // Gerçek alıcı e-posta adresi
+		email := "recipient.email@example.com"
 		if err := client.RPush(ctx, taskQueueName, email).Err(); err != nil {
 			fmt.Println("Görev kuyruğuna görev eklenirken hata:", err)
 		}
